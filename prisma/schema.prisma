@@ -12,3 +12,64 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  AdoptionRequest AdoptionRequest[]
+}
+
+model Pet {
+  id                   String     @id @default(uuid())
+  name                 String
+  species              PetSpecies
+  breed                String
+  age                  Int
+  size                 PetSize
+  location             String
+  description          String
+  temperament          String?
+  medicalHistory       String?
+  adoptionRequirements String
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  AdoptionRequest AdoptionRequest[]
+}
+
+model AdoptionRequest {
+  id                     String    @id @default(uuid())
+  userId                 String
+  petId                  String
+  status                 ReqStatus
+  petOwnershipExperience String?
+
+  user User @relation(references: [id], fields: [userId])
+  pet  Pet  @relation(references: [id], fields: [petId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PetSpecies {
+  Cat
+  Dog
+  Bird
+}
+
+enum PetSize {
+  Small
+  Medium
+  Large
+}
+
+enum ReqStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
