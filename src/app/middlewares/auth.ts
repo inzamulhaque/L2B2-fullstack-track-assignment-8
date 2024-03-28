@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import config from "../../config";
 import { Secret } from "jsonwebtoken";
 import httpStatus from "http-status";
-import { verifyToken } from "../utils/jwt.utils";
+import { verifyToken } from "../utils/jwt";
 import AppError from "../errors/AppError";
 
 const auth = async (
