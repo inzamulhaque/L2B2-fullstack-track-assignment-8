@@ -31,4 +31,31 @@ const createPetValidationSchema = z.object({
   }),
 });
 
-export { createPetValidationSchema };
+const updatePetValidationSchema = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    species: z
+      .string()
+      .transform((val) => {
+        const lowerVal = val.toLowerCase();
+        if (["dog", "cat", "bird"].includes(lowerVal)) {
+          return lowerVal.charAt(0).toUpperCase() + lowerVal.slice(1);
+        }
+        return val;
+      })
+      .refine((val) => ["Dog", "Cat", "Bird"].includes(val), {
+        message: "Species must be 'Dog', 'Cat', or 'Bird'.",
+      })
+      .optional(),
+    breed: z.string().optional(),
+    age: z.number().optional(),
+    size: z.string().optional(),
+    location: z.string().optional(),
+    description: z.string().optional(),
+    temperament: z.string().optional(),
+    medicalHistory: z.string().optional(),
+    adoptionRequirements: z.string().optional(),
+  }),
+});
+
+export { createPetValidationSchema, updatePetValidationSchema };

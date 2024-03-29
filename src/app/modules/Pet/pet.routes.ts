@@ -1,8 +1,11 @@
 import { Router } from "express";
 import auth from "../../middlewares/auth";
-import { createPet, getAllPets } from "./pet.controller";
+import { createPet, getAllPets, updatePet } from "./pet.controller";
 import validateRequest from "../../middlewares/validateRequest";
-import { createPetValidationSchema } from "./pet.validation";
+import {
+  createPetValidationSchema,
+  updatePetValidationSchema,
+} from "./pet.validation";
 
 const router: Router = Router();
 
@@ -13,6 +16,13 @@ router.post(
   auth,
   validateRequest(createPetValidationSchema),
   createPet
+);
+
+router.put(
+  "/pets/:petId",
+  auth,
+  validateRequest(updatePetValidationSchema),
+  updatePet
 );
 
 const PetRoutes = router;

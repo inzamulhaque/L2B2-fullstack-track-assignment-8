@@ -1,7 +1,11 @@
 import httpStatus from "http-status";
 import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/catchAsync";
-import { createPetIntoDB, getAllPetsFromDB } from "./pet.services";
+import {
+  createPetIntoDB,
+  getAllPetsFromDB,
+  updatePetIntoDB,
+} from "./pet.services";
 import pickFields from "../../utils/pickFields";
 import { petFilterableFields, petPaginationOption } from "./pet.constant";
 
@@ -34,4 +38,17 @@ const createPet = catchAsync(async (req, res) => {
   });
 });
 
-export { getAllPets, createPet };
+const updatePet = catchAsync(async (req, res) => {
+  const { petId } = req.params;
+  // call update pet service function for update pet info into DB
+  const result = await updatePetIntoDB(petId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Pet profile updated successfully",
+    data: result,
+  });
+});
+
+export { getAllPets, createPet, updatePet };

@@ -48,12 +48,17 @@ const getAllPetsFromDB = async (
     andCondions.length > 0 ? { AND: andCondions } : {};
 
   const result = await prisma.pet.findMany({
-    where: {
-      OR: [
-        { breed: { contains: "Deshi", mode: "insensitive" } },
-        { location: { contains: "Deshi", mode: "insensitive" } },
-      ],
-    },
+    where: whereConditons,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
   });
 
   const total = await prisma.pet.count({
@@ -80,4 +85,27 @@ const createPetIntoDB = async (payload: Pet) => {
   return result;
 };
 
-export { getAllPetsFromDB, createPetIntoDB };
+const updatePetIntoDB = async (id: string, payload: Partial<Pet>) => {
+  const petData = await prisma.pet.findUniqueOrThrow({
+    where: { id },
+  });
+
+  const species = payload.species
+    ? ((payload.species.toLowerCase().charAt(0).toUpperCase() +
+        payload.species.slice(1)) as PetSpecies)
+    : petData.species;
+
+  const result = await prisma.pet.update({
+    where: {
+      id,
+    },
+    data: {
+      ...payload,
+      species,
+    },
+  });
+
+  return result;
+};
+
+export { getAllPetsFromDB, createPetIntoDB, updatePetIntoDB };
