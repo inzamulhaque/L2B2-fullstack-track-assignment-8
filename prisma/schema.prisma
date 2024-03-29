@@ -46,7 +46,7 @@ model AdoptionRequest {
   id                     String    @id @default(uuid())
   userId                 String
   petId                  String
-  status                 ReqStatus
+  status                 ReqStatus @default(PENDING)
   petOwnershipExperience String
 
   user User @relation(references: [id], fields: [userId])
