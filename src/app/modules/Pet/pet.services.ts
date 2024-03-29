@@ -1,5 +1,74 @@
-import { Pet, PetSpecies } from "@prisma/client";
+import { Pet, PetSpecies, Prisma } from "@prisma/client";
 import prisma from "../../utils/prisma";
+import { IPaginationOptions } from "../../interfaces/pagination";
+import pagination from "../../utils/pagination";
+import { petSearchAbleFields } from "./pet.constant";
+
+const getAllPetsFromDB = async (
+  params: Record<string, unknown>,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondions: Prisma.PetWhereInput[] = [];
+
+  if (params.searchTerm) {
+    andCondions.push({
+      OR: petSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: params.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andCondions.push({
+      AND: Object.keys(filterData).map((key) => {
+        if (key === "age") {
+          return {
+            [key]: {
+              equals: Number((filterData as any)[key]),
+            },
+          };
+        } else {
+          return {
+            [key]: {
+              equals: (filterData as any)[key],
+            },
+          };
+        }
+      }),
+    });
+  }
+
+  const whereConditons: Prisma.PetWhereInput =
+    andCondions.length > 0 ? { AND: andCondions } : {};
+
+  const result = await prisma.pet.findMany({
+    where: {
+      OR: [
+        { breed: { contains: "Deshi", mode: "insensitive" } },
+        { location: { contains: "Deshi", mode: "insensitive" } },
+      ],
+    },
+  });
+
+  const total = await prisma.pet.count({
+    where: whereConditons,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
 
 const createPetIntoDB = async (payload: Pet) => {
   const species = (payload.species.toLowerCase().charAt(0).toUpperCase() +
@@ -11,4 +80,4 @@ const createPetIntoDB = async (payload: Pet) => {
   return result;
 };
 
-export { createPetIntoDB };
+export { getAllPetsFromDB, createPetIntoDB };
