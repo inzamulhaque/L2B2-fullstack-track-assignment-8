@@ -2,9 +2,11 @@ import { Router } from "express";
 import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { requestAdoptionValidationSchema } from "./adoption.validation";
-import { requestAdoption } from "./adoption.controller";
+import { getAllAdoptionRequest, requestAdoption } from "./adoption.controller";
 
 const router: Router = Router();
+
+router.get("/adoption-requests", auth, getAllAdoptionRequest);
 
 router.post(
   "/adoption-request",

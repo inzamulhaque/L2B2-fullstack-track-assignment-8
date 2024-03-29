@@ -1,6 +1,11 @@
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "../../utils/prisma";
 
+const getAllAdoptionRequestFromDB = async () => {
+  const result = await prisma.adoptionRequest.findMany({});
+  return result;
+};
+
 const createAdoptionRequestIntoDB = async (
   user: JwtPayload,
   payload: { petId: string; petOwnershipExperience: string }
@@ -16,4 +21,4 @@ const createAdoptionRequestIntoDB = async (
   return result;
 };
 
-export { createAdoptionRequestIntoDB };
+export { getAllAdoptionRequestFromDB, createAdoptionRequestIntoDB };
