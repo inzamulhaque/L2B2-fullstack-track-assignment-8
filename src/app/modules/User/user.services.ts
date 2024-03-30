@@ -2,6 +2,17 @@ import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import config from "../../../config";
 import prisma from "../../utils/prisma";
+import { JwtPayload } from "jsonwebtoken";
+
+const getProfileInfoFromDB = async (user: JwtPayload) => {
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  return userData;
+};
 
 const createUserIntoDB = async (payload: User) => {
   const hashedPassword: string = await bcrypt.hash(
@@ -19,4 +30,4 @@ const createUserIntoDB = async (payload: User) => {
   return res;
 };
 
-export { createUserIntoDB };
+export { createUserIntoDB, getProfileInfoFromDB };
