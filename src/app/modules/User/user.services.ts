@@ -9,6 +9,13 @@ const getProfileInfoFromDB = async (user: JwtPayload) => {
     where: {
       email: user.email,
     },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 
   return userData;
@@ -30,4 +37,22 @@ const createUserIntoDB = async (payload: User) => {
   return res;
 };
 
-export { createUserIntoDB, getProfileInfoFromDB };
+const updateUserIntoDB = async (user: JwtPayload, payload: Partial<User>) => {
+  await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const result = await prisma.user.update({
+    where: {
+      email: user.email,
+    },
+    data: payload,
+  });
+
+  const { password, ...res } = result;
+  return res;
+};
+
+export { createUserIntoDB, getProfileInfoFromDB, updateUserIntoDB };

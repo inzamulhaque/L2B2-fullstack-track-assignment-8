@@ -1,7 +1,11 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createUserIntoDB, getProfileInfoFromDB } from "./user.services";
+import {
+  createUserIntoDB,
+  getProfileInfoFromDB,
+  updateUserIntoDB,
+} from "./user.services";
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -29,4 +33,16 @@ const createUser = catchAsync(async (req, res) => {
   });
 });
 
-export { createUser, getProfile };
+const updateUser = catchAsync(async (req: Request & JwtPayload, res) => {
+  // call update user service function for updating user info into DB
+  const result = await updateUserIntoDB(req.user, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User profile updated successfully",
+    data: result,
+  });
+});
+
+export { createUser, getProfile, updateUser };

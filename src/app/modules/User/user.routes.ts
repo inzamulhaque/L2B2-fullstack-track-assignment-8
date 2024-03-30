@@ -1,7 +1,10 @@
 import { Router } from "express";
 import validateRequest from "../../middlewares/validateRequest";
-import { createUserValidationSchema } from "./user.validation";
-import { createUser, getProfile } from "./user.controller";
+import {
+  createUserValidationSchema,
+  updateUserValidationSchema,
+} from "./user.validation";
+import { createUser, getProfile, updateUser } from "./user.controller";
 import auth from "../../middlewares/auth";
 
 const router: Router = Router();
@@ -12,6 +15,13 @@ router.post(
   "/register",
   validateRequest(createUserValidationSchema),
   createUser
+);
+
+router.put(
+  "/profile",
+  auth,
+  validateRequest(updateUserValidationSchema),
+  updateUser
 );
 
 const UserRoutes = router;
