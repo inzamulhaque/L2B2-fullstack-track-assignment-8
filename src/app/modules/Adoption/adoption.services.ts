@@ -1,5 +1,6 @@
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "../../utils/prisma";
+import { ReqStatus } from "@prisma/client";
 
 const getAllAdoptionRequestFromDB = async () => {
   const result = await prisma.adoptionRequest.findMany({});
@@ -21,4 +22,30 @@ const createAdoptionRequestIntoDB = async (
   return result;
 };
 
-export { getAllAdoptionRequestFromDB, createAdoptionRequestIntoDB };
+const updateRequestStatusIntoDB = async (
+  id: string,
+  payload: { status: ReqStatus }
+) => {
+  await prisma.adoptionRequest.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  const result = await prisma.adoptionRequest.update({
+    where: {
+      id,
+    },
+    data: {
+      status: payload.status,
+    },
+  });
+
+  return result;
+};
+
+export {
+  getAllAdoptionRequestFromDB,
+  createAdoptionRequestIntoDB,
+  updateRequestStatusIntoDB,
+};

@@ -1,3 +1,4 @@
+import { ReqStatus } from "@prisma/client";
 import { z } from "zod";
 
 const requestAdoptionValidationSchema = z.object({
@@ -9,4 +10,13 @@ const requestAdoptionValidationSchema = z.object({
   }),
 });
 
-export { requestAdoptionValidationSchema };
+const acceptAdoptionRequestValidationSchema = z.object({
+  body: z.object({
+    status: z.enum([ReqStatus.PENDING, ReqStatus.APPROVED, ReqStatus.REJECTED]),
+  }),
+});
+
+export {
+  requestAdoptionValidationSchema,
+  acceptAdoptionRequestValidationSchema,
+};

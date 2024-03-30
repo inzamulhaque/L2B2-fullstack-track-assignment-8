@@ -6,6 +6,7 @@ import { JwtPayload } from "jsonwebtoken";
 import {
   createAdoptionRequestIntoDB,
   getAllAdoptionRequestFromDB,
+  updateRequestStatusIntoDB,
 } from "./adoption.services";
 
 const getAllAdoptionRequest = catchAsync(async (req, res) => {
@@ -32,4 +33,17 @@ const requestAdoption = catchAsync(async (req: Request & JwtPayload, res) => {
   });
 });
 
-export { getAllAdoptionRequest, requestAdoption };
+const acceptRequestAdoption = catchAsync(async (req, res) => {
+  const { requestId } = req.params;
+  // call request for adoption pet service function for create new request into DB
+  const result = await updateRequestStatusIntoDB(requestId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Adoption request updated successfully",
+    data: result,
+  });
+});
+
+export { getAllAdoptionRequest, requestAdoption, acceptRequestAdoption };
